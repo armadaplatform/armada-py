@@ -6,27 +6,16 @@ class Config(object):
     config_paths = []
 
     @staticmethod
-    def get(file_name, default=None, custom_file=None):
+    def get(file_name, default=None):
         config = {}
         file_list = Config._get_path(file_name)
         if not file_list:
             if not default:
                 return config
-            return Config._add_custom(default, custom_file)
+            return default
         config = {}
         for file in file_list:
             config = Config._merge_config(config, Config._load(file))
-        return Config._add_custom(config, custom_file)
-
-    @staticmethod
-    def _add_custom(config, custom_file):
-        if not custom_file:
-            return config
-        if not isinstance(custom_file, list):
-            custom_file = [custom_file]
-        for file in custom_file:
-            if os.path.exists(file):
-                config = Config._merge_config(config, Config._load(file))
         return config
 
     @staticmethod
