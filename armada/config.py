@@ -30,8 +30,8 @@ class Config(object):
             result = config_file.read()
             result = result.strip()
         if file.endswith('.json'):
-            result = json.loads(result)
-        return result
+            return json.loads(result)
+        raise NotImplementedError('File type not supported')
 
     @staticmethod
     def _get_path(file):
