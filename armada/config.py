@@ -15,7 +15,7 @@ class Config(object):
             return Config._add_custom(default, custom_file)
         config = {}
         for file in file_list:
-            config = dict(Config._deep_update(config, Config._load(file)))
+            config = Config._merge_config(config, Config._load(file))
         return Config._add_custom(config, custom_file)
 
     @staticmethod
@@ -26,7 +26,7 @@ class Config(object):
             custom_file = [custom_file]
         for file in custom_file:
             if os.path.exists(file):
-                config = dict(Config._deep_update(config, Config._load(file)))
+                config = Config._merge_config(config, Config._load(file))
         return config
 
     @staticmethod
@@ -68,6 +68,17 @@ class Config(object):
             raise NameError('Environment variable CONFIG_PATH not exist or is empty!')
 
         return config_path
+
+    @staticmethod
+    def _merge_config(config1, config2):
+        if isinstance(config1, dict) and isinstance(config2, dict):
+            return dict(Config._deep_update(config1, config2))
+        if isinstance(config1, str) and isinstance(config2, str):
+            return "\n".join([config1, config2])
+        raise TypeError('You try to merge configs of different types: {config1} and {config2}'.format(
+            config1=type(config1),
+            config2=type(config2)
+        ))
 
     @staticmethod
     def _deep_update(dict1, dict2):
