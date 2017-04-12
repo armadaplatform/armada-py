@@ -53,7 +53,7 @@ class Config(object):
         if Config.config_paths:
             return Config.config_paths
 
-        Config.config_paths = os.environ.get('CONFIG_PATH', Config._get_default_env_path()).split(os.pathsep)
+        Config.config_paths = Config._get_env_config_path().split(os.pathsep)
         Config.config_paths.sort(key=len)
         for env in Config.config_paths:
             path = os.path.join(env, 'local')
@@ -63,18 +63,12 @@ class Config(object):
         return Config.config_paths
 
     @staticmethod
-    def _get_default_env_path():
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(_file_)))
-        python_paths = os.environ.get('PYTHONPATH', BASE_DIR).split(os.pathsep)
-        paths = []
-        for python_path in python_paths:
-            path = os.path.join(python_path, 'config', 'dev')
-            if os.path.exists(path):
-                paths.append(path)
-            path = os.path.join(python_path, 'config')
-            if os.path.exists(path):
-                paths.append(path)
-        return os.pathsep.join(paths)
+    def _get_env_config_path():
+        config_path = os.environ.get('CONFIG_PATH', None)
+        if not config_path:
+            raise NameError('Environment variable CONFIG_PATH not exist or is empty!')
+
+        return config_path
 
     @staticmethod
     def _deep_update(dict1, dict2):
