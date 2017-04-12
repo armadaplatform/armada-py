@@ -8,29 +8,29 @@ class Config(object):
     @staticmethod
     def get(file_name, default=None, custom_file=None):
         config = {}
-        file_list = Config.__get_path(file_name)
+        file_list = Config._get_path(file_name)
         if not file_list:
             if not default:
                 return config
-            return Config.__add_custom(default, custom_file)
+            return Config._add_custom(default, custom_file)
         config = {}
         for file in file_list:
-            config = dict(Config.__deep_update(config, Config.__load(file)))
-        return Config.__add_custom(config, custom_file)
+            config = dict(Config._deep_update(config, Config._load(file)))
+        return Config._add_custom(config, custom_file)
 
     @staticmethod
-    def __add_custom(config, custom_file):
+    def _add_custom(config, custom_file):
         if not custom_file:
             return config
         if not isinstance(custom_file, list):
             custom_file = [custom_file]
         for file in custom_file:
             if os.path.exists(file):
-                config = dict(Config.__deep_update(config, Config.__load(file)))
+                config = dict(Config._deep_update(config, Config._load(file)))
         return config
 
     @staticmethod
-    def __load(file):
+    def _load(file):
         with open(file) as config_file:
             result = config_file.read()
             result = result.strip()
@@ -39,8 +39,8 @@ class Config(object):
         return result
 
     @staticmethod
-    def __get_path(file):
-        path_list = Config.__get_env_path_list()
+    def _get_path(file):
+        path_list = Config._get_env_path_list()
         file_paths = []
         for conf_dir in path_list:
             path = os.path.join(conf_dir, file)
@@ -49,11 +49,11 @@ class Config(object):
         return file_paths
 
     @staticmethod
-    def __get_env_path_list():
+    def _get_env_path_list():
         if Config.config_paths:
             return Config.config_paths
 
-        Config.config_paths = os.environ.get('CONFIG_PATH', Config.__get_default_env_path()).split(os.pathsep)
+        Config.config_paths = os.environ.get('CONFIG_PATH', Config._get_default_env_path()).split(os.pathsep)
         Config.config_paths.sort(key=len)
         for env in Config.config_paths:
             path = os.path.join(env, 'local')
@@ -63,8 +63,8 @@ class Config(object):
         return Config.config_paths
 
     @staticmethod
-    def __get_default_env_path():
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    def _get_default_env_path():
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(_file_)))
         python_paths = os.environ.get('PYTHONPATH', BASE_DIR).split(os.pathsep)
         paths = []
         for python_path in python_paths:
@@ -77,11 +77,11 @@ class Config(object):
         return os.pathsep.join(paths)
 
     @staticmethod
-    def __deep_update(dict1, dict2):
+    def _deep_update(dict1, dict2):
         for k in set(dict1.keys()).union(dict2.keys()):
             if k in dict1 and k in dict2:
                 if isinstance(dict1[k], dict) and isinstance(dict2[k], dict):
-                    yield (k, dict(Config.__deep_update(dict1[k], dict2[k])))
+                    yield (k, dict(Config._deep_update(dict1[k], dict2[k])))
                 else:
                     yield (k, dict2[k])
             elif k in dict1:
