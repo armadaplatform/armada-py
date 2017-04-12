@@ -55,10 +55,9 @@ class Config(object):
 
         Config.config_paths = Config._get_env_config_path().split(os.pathsep)
         Config.config_paths.sort(key=len)
-        for env in Config.config_paths:
-            path = os.path.join(env, 'local')
-            if os.path.exists(path):
-                Config.config_paths.append(path)
+        path = os.path.join(Config.config_paths[0], 'local')
+        if os.path.exists(path):
+            Config.config_paths.append(path)
 
         return Config.config_paths
 
