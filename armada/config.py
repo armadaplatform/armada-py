@@ -15,8 +15,14 @@ class Config(object):
             return default
         config = {}
         for file in file_list:
-            config = Config._merge_config(config, Config._load(file))
+            config = Config.merge_configs(config, Config._load(file))
         return config
+
+    @staticmethod
+    def merge_configs(config1, config2):
+        if isinstance(config1, dict) and isinstance(config2, dict):
+            return dict(Config._deep_update(config1, config2))
+        raise TypeError('Merge config can only merge dict objects')
 
     @staticmethod
     def _load(file):
@@ -57,17 +63,6 @@ class Config(object):
             raise NameError('Environment variable CONFIG_PATH not exist or is empty!')
 
         return config_path
-
-    @staticmethod
-    def _merge_config(config1, config2):
-        if isinstance(config1, dict) and isinstance(config2, dict):
-            return dict(Config._deep_update(config1, config2))
-        if isinstance(config1, str) and isinstance(config2, str):
-            return "\n".join([config1, config2])
-        raise TypeError('You try to merge configs of different types: {config1} and {config2}'.format(
-            config1=type(config1),
-            config2=type(config2)
-        ))
 
     @staticmethod
     def _deep_update(dict1, dict2):
