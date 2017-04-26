@@ -6,8 +6,10 @@ import pytest
 from armada.hermes import get_merged_config, get_config
 
 config_default = {"foo": 0}
-config_dev = {"foo": 1,
-              "dev": True}
+config_dev = {
+    "foo": 1,
+    "dev": True
+}
 
 config_local = {"foo": 2}
 
@@ -41,7 +43,7 @@ def set_config_path(monkeypatch, tmp_config_path):
 
 def test_getting_simple_config():
     config = get_config('config.json')
-    assert config == {"foo": 1, "dev": True}
+    assert config == config_dev
 
 
 def test_getting_merged_config():
