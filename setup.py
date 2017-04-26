@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='armada',
@@ -11,4 +11,6 @@ setup(
     download_url='https://github.com/armadaplatform/armada-py/tarball/1.0',
     keywords=['armada', 'hermes', 'config'],
     classifiers=[],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 )

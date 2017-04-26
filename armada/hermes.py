@@ -1,12 +1,18 @@
 import json
 import os
 
+from .config import Config
+
 
 def get_config_file_path(key):
     for env in os.environ.get('CONFIG_PATH', '').split(os.pathsep):
         path = os.path.join(env, key)
         if os.path.exists(path):
             return path
+
+
+def get_merged_config(key, default=None):
+    return Config.get(key, default)
 
 
 def get_config(key, default=None, strip=True):
