@@ -1,4 +1,5 @@
 import json
+import glob
 import os
 import pyfscache
 
@@ -24,10 +25,9 @@ def get_address(microservice_name, env=None, app_id=None):
 
 @cache_it
 def get_combined_magellan_config():
-    root, dirs, files = os.walk(MAGELLAN_CONFIG_PATH)
+    files = glob.glob(os.path.join(MAGELLAN_CONFIG_PATH, '*.json'))
     combined = {}
     for file in files:
         with open(file, 'r') as f:
             combined.update(json.load(f))
-
     return combined
