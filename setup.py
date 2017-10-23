@@ -11,6 +11,6 @@ setup(
     download_url='https://github.com/armadaplatform/armada-py/tarball/1.1',
     keywords=['armada', 'hermes', 'config'],
     classifiers=[],
-    setup_requires=['pytest-runner'],
+    setup_requires=['pytest-runner', 'pyfscache'],
     tests_require=['pytest'],
 )
