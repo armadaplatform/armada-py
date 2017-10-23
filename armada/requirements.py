@@ -2,7 +2,7 @@ import json
 import os
 import pyfscache
 
-MAGELLAN_CONFIG_PATH = '/opt/microservice/src/local-magellan/'
+MAGELLAN_CONFIG_PATH = '/var/opt/local-magellan/'
 
 cache_it = pyfscache.FSCache('/tmp/cache', hours=1)
 
