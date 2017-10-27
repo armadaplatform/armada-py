@@ -12,6 +12,5 @@ setup(
     keywords=['armada', 'hermes', 'config'],
     classifiers=[],
     setup_requires=['pytest-runner'],
-    install_requires=['pyfscache'],
     tests_require=['pytest'],
 )

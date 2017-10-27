@@ -1,12 +1,9 @@
 import json
-import glob
 import os
-import pyfscache
 import time
 
-MAGELLAN_CONFIG_PATH = '/var/opt/local-magellan/'
+SERVICE_DISCOVERY_CONFIG_DIR_PATH = '/var/opt/service_discovery.json'
 
-cache_it = pyfscache.FSCache('/tmp/cache')
 
 
 def get_address(microservice_name, env=None, app_id=None):
@@ -25,21 +22,18 @@ def get_address(microservice_name, env=None, app_id=None):
                                                                                                     microservice_name))
 
 
-@cache_it
 def get_combined_magellan_config():
     wait_till_requirements_are_ready()
 
-    files = glob.glob(os.path.join(MAGELLAN_CONFIG_PATH, '*.json'))
-    combined = {}
-    for file in files:
-        with open(file, 'r') as f:
-            combined.update(json.load(f))
+    with open(SERVICE_DISCOVERY_CONFIG_DIR_PATH, 'r') as f:
+        combined = json.load(f)
     return combined
 
 
 def wait_till_requirements_are_ready():
-    with open('/proc/uptime', 'r') as f:
-        uptime_seconds = float(f.readline().split()[0])
+    if os.path.isfile(SERVICE_DISCOVERY_CONFIG_DIR_PATH):
+        return
+    uptime_seconds = time.time() - os.stat('/proc/1').st_ctime
     if uptime_seconds < 3:
         time.sleep(3 - uptime_seconds)
 
