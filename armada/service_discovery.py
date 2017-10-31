@@ -5,7 +5,6 @@ import time
 SERVICE_DISCOVERY_CONFIG_DIR_PATH = '/var/opt/service_discovery.json'
 
 
-
 def get_address(microservice_name, env=None, app_id=None):
     config = get_combined_magellan_config()
     filtered = {key: value for key, value in config.items() if value['microservice_name'] == microservice_name}

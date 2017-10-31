@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='armada',
     packages=['armada'],
-    version='1.1',
+    version='1.2',
     description='Configuration manager for ArmadaPlatform services.',
     author='Ganymede',
     author_email='cerebro@ganymede.eu',
