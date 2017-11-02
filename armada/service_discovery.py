@@ -2,7 +2,7 @@ import json
 import os
 import time
 
-SERVICE_DISCOVERY_CONFIG_DIR_PATH = '/var/opt/service_discovery.json'
+SERVICE_DISCOVERY_CONFIG_PATH = '/var/opt/service_discovery.json'
 
 
 def get_address(microservice_name, env=None, app_id=None):
@@ -24,13 +24,13 @@ def get_address(microservice_name, env=None, app_id=None):
 def get_combined_magellan_config():
     wait_till_requirements_are_ready()
 
-    with open(SERVICE_DISCOVERY_CONFIG_DIR_PATH, 'r') as f:
+    with open(SERVICE_DISCOVERY_CONFIG_PATH, 'r') as f:
         combined = json.load(f)
     return combined
 
 
 def wait_till_requirements_are_ready():
-    if os.path.isfile(SERVICE_DISCOVERY_CONFIG_DIR_PATH):
+    if os.path.isfile(SERVICE_DISCOVERY_CONFIG_PATH):
         return
     uptime_seconds = time.time() - os.stat('/proc/1').st_ctime
     if uptime_seconds < 3:
