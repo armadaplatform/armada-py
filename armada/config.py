@@ -59,7 +59,7 @@ class Config(object):
     @staticmethod
     def _get_extra_path(base_path):
         extra_path = 'local'
-        if os.getenv('TEST_ENV'):
+        if os.getenv('TEST_ENV', None):
             extra_path = 'test'
 
         path = os.path.join(base_path, extra_path)

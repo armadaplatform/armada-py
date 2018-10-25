@@ -56,3 +56,13 @@ merged config will look for file in:
     hermes.get_merged_config('myconfig.json') 
     {"db_host: "localhost", "db_port": 3306}
     ```
+
+if additionaly TEST_ENV is set to true, merged config will look for file in:
+  * /example/config/myconfig.json
+  * /example/config/dev/myconfig.json
+  * /example/config/test/myconfig.json  
+
+1. if all of them exists  
+  /example/config/myconfig.json is overwritten by /example/config/dev/myconfig.json, and then result is overwritten by /example/config/test/myconfig.json  
+  
+2. rest is as when TEST_ENV is never set.
