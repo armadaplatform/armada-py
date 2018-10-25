@@ -50,11 +50,22 @@ class Config(object):
 
         Config.config_paths = Config._get_env_config_path().split(os.pathsep)
         Config.config_paths.sort(key=len)
-        path = os.path.join(Config.config_paths[0], 'local')
-        if os.path.exists(path):
-            Config.config_paths.append(path)
+        extra_path = Config._get_extra_path(Config.config_paths[0])
+        if extra_path:
+            Config.config_paths.append(extra_path)
 
         return Config.config_paths
+
+    @staticmethod
+    def _get_extra_path(base_path):
+        extra_path = 'local'
+        if os.getenv('TEST_ENV'):
+            extra_path = 'test'
+
+        path = os.path.join(base_path, extra_path)
+        if os.path.exists(path):
+            return path
+        return None
 
     @staticmethod
     def _get_env_config_path():
