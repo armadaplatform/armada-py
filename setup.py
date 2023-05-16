@@ -1,5 +1,10 @@
 from setuptools import setup
 
+install_requires = [
+    'python-dotenv==1.0.0',
+]
+
+
 setup(
     name='armada',
     packages=['armada'],
@@ -13,4 +18,5 @@ setup(
     classifiers=[],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
+    install_requires=install_requires,
 )
