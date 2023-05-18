@@ -66,3 +66,56 @@ if additionaly TEST_ENV is set to true, merged config will look for file in:
   /example/config/myconfig.json is overwritten by /example/config/dev/myconfig.json, and then result is overwritten by /example/config/test/myconfig.json  
   
 2. rest is as when TEST_ENV is never set.
+
+## Secrets manager
+
+Added in version 1.4.
+
+### Usage
+1. Config must be a json file. 
+2. Add secrets_manager block to config
+    ```
+    "secrets_manager": {
+      "name": "production-example"
+    }
+    ```
+3. Add value for specific key in form:
+    ```
+   secrets_manager:KEY[:TYPE]
+   "password": "secrets_manager:orders-db/password"
+    ```
+4. Install boto3 to get secrets
+    ```
+    from boto3 import client
+
+    sm_client = client('secretsmanager')
+
+    hermes.get_merged_config(
+      key='config.json',
+      secrets_manager_client=sm_client,
+    )
+    ```
+  If you didn't put client as a parameter, but you have installed boto3 we create client for you. But in this case you need to create .env file in your config directory and add AWS variables such as:
+  * AWS_ACCESS_KEY_ID=AK...
+  * AWS_SECRET_ACCESS_KEY=KXS...
+  * AWS_DEFAULT_REGION=us-east-1  
+
+KEY in secrets manager can be totally different then key in config.
+
+Default type is 'str'. You don't need to add ':str' to value. Otherwise you need to specify data type.
+
+### Supported types
+* str
+* int
+* bool
+* list
+* dict
+* file
+
+File type - this will create a file with content from secrets manager. Filename will be KEY FROM CONFIG . Value in config for this key will be absolute path to file.
+
+Types usage examples:
+```
+  "blacklisted_ips": "secrets_manager:cheater-ips:list"
+  "ssh_key": "secrets_manager:orders-db/ssh-proxy/ci-deploy.key:file"
+```
