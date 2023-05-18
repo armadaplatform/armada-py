@@ -16,13 +16,13 @@ def get_merged_config(key, default=None, secrets_manager_client=None):
     config = Config.get(key, default)
 
     if isinstance(config, dict):
-        secrets = get_secrets(
+        secrets = _get_secrets(
             secret_id=config.get('secrets_manager', {}).get('name', ''),
             secrets_manager_client=secrets_manager_client,
         )
 
         if secrets:
-            merge_secrets_to_config(config, secrets)
+            _merge_secrets_to_config(config, secrets)
     
     return config
 
@@ -39,13 +39,13 @@ def get_config(key, default=None, strip=True, secrets_manager_client=None):
         result = json.loads(result)
 
         if isinstance(result, dict):
-            secrets = get_secrets(
+            secrets = _get_secrets(
                 secret_id=result.get('secrets_manager', {}).get('name', ''),
                 secrets_manager_client=secrets_manager_client,
             )
 
             if secrets:
-                merge_secrets_to_config(result, secrets)
+                _merge_secrets_to_config(result, secrets)
 
     return result
 
@@ -79,7 +79,7 @@ def get_configs_keys(key, default=None):
 
 # ----------------------- SECRETS MANAGER --------------------- #
 
-def get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
+def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
     if not secret_id:
         return {}
     
@@ -110,10 +110,10 @@ def get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
 
     return json.loads(get_secret_value_response['SecretString'])
 
-def merge_secrets_to_config(config: dict, secrets: dict):
+def _merge_secrets_to_config(config: dict, secrets: dict):
     for key, value in config.items():
         if isinstance(value, dict):
-            merge_secrets_to_config(value, secrets)
+            _merge_secrets_to_config(value, secrets)
         else:
             # Values of the form "secrets_manager:KEY[:TYPE]" are read from Secrets Manager,
             # e.g. "secrets_manager:appsflyer_service/dev_key".
@@ -121,27 +121,23 @@ def merge_secrets_to_config(config: dict, secrets: dict):
             value = str(value)
             value_list = value.split(':')
 
-            if len(value_list) not in (2, 3):
+            if len(value_list) not in (2, 3) or not value_list[0] == 'secrets_manager':
                 continue
             
-            is_secrets_manager = value_list[0] == 'secrets_manager'
             secret_key = value_list[1]
             secret_value = secrets.get(secret_key)
-            try:
-                secret_type = value_list[2]
-            except IndexError:
-                secret_type = 'str'
+            secret_type = value_list[2] if len(value_list) == 3 else 'str'
 
-            if secret_value and is_secrets_manager:
-                config[key] = convert_secret_value(secret_type, secret_value, key)
+            if secret_value:
+                config[key] = _convert_secret_value(secret_type, secret_value, key)
 
-def convert_secret_value(secret_type: str, secret_value: str, config_key: str):
+def _convert_secret_value(secret_type: str, secret_value: str, config_key: str):
     secret_type = secret_type.lower()
 
-    if secret_type == 'int':
-        return int(secret_value)
-    elif secret_type == 'str':
+    if secret_type == 'str':
         return secret_value
+    elif secret_type == 'int':
+        return int(secret_value)
     elif secret_type == 'dict' or secret_type == 'list':
         return json.loads(secret_value)
     elif secret_type == 'bool':
@@ -158,8 +154,7 @@ def convert_secret_value(secret_type: str, secret_value: str, config_key: str):
                 if len(lines) == 1:
                     lines = secret_value.split('\n')
 
-                for line in lines:
-                    file.write(line + '\n')
+                file.write('\n'.join(lines) + '\n')
         
             os.chmod(file_path, 0o600)
         

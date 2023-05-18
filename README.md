@@ -82,7 +82,7 @@ Added in version 1.4.
 3. Add value for specific key in form:
     ```
    secrets_manager:KEY[:TYPE]
-   "test": "secrets_manager:test_1:int"
+   "password": "secrets_manager:orders-db/password"
     ```
 4. Install boto3 to get secrets
     ```
@@ -113,3 +113,9 @@ Default type is 'str'. You don't need to add ':str' to value. Otherwise you need
 * file
 
 File type - this will create a file with content from secrets manager. Filename will be KEY FROM CONFIG . Value in config for this key will be absolute path to file.
+
+Types usage examples:
+```
+  "blacklisted_ips": "secrets_manager:cheater-ips:list"
+  "ssh_key": "secrets_manager:orders-db/ssh-proxy/ci-deploy.key:file"
+```
