@@ -96,7 +96,7 @@ def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
             # are required!
             load_dotenv(env_path)
 
-            secrets_manager_client = client('secretsmanager')
+            secrets_manager_client = client('secretsmanager', region_name='us-east-1')
         
         except:
             return {}
