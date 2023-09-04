@@ -114,6 +114,12 @@ def _merge_secrets_to_config(config: dict, secrets: dict):
     for key, value in config.items():
         if isinstance(value, dict):
             _merge_secrets_to_config(value, secrets)
+        
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    _merge_secrets_to_config(item, secrets)
+        
         else:
             # Values of the form "secrets_manager:KEY[:TYPE]" are read from Secrets Manager,
             # e.g. "secrets_manager:appsflyer_service/dev_key".
