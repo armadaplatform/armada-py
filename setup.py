@@ -8,7 +8,7 @@ install_requires = [
 setup(
     name='armada',
     packages=['armada'],
-    version='1.5',
+    version='1.6',
     description='Configuration manager for ArmadaPlatform services.',
     author='Ganymede',
     author_email='cerebro@ganymede.eu',
