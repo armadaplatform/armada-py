@@ -1,6 +1,5 @@
 import json
 import os
-from dotenv import load_dotenv
 
 from .config import Config
 
@@ -85,18 +84,12 @@ def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
     
     if not secrets_manager_client:
         try:
-            from boto3 import client
+            from boto3 import Session
 
-            env_path = get_config_file_path('.env')
-
-            # Environment variables such as:
-            # AWS_ACCESS_KEY_ID=AK...
-            # AWS_SECRET_ACCESS_KEY=KXS...
-            # AWS_DEFAULT_REGION=us-east-1
-            # are required!
-            load_dotenv(env_path)
-
-            secrets_manager_client = client('secretsmanager', region_name='us-east-1')
+            # Support AWS CLI profiles for local development
+            profile_name = f'sm-{secret_id}'
+            session = Session(profile_name=profile_name if profile_name in Session().available_profiles or [] else None)
+            secrets_manager_client = session.client('secretsmanager', region_name='us-east-1')
         
         except:
             return {}
