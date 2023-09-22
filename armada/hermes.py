@@ -1,6 +1,5 @@
 import json
 import os
-from dotenv import load_dotenv
 
 from .config import Config
 
@@ -18,6 +17,7 @@ def get_merged_config(key, default=None, secrets_manager_client=None):
     if isinstance(config, dict):
         secrets = _get_secrets(
             secret_id=config.get('secrets_manager', {}).get('name', ''),
+            aws_profile=config.get('secrets_manager', {}).get('aws_profile', None),
             secrets_manager_client=secrets_manager_client,
         )
 
@@ -41,6 +41,7 @@ def get_config(key, default=None, strip=True, secrets_manager_client=None):
         if isinstance(result, dict):
             secrets = _get_secrets(
                 secret_id=result.get('secrets_manager', {}).get('name', ''),
+                aws_profile=result.get('secrets_manager', {}).get('aws_profile', None),
                 secrets_manager_client=secrets_manager_client,
             )
 
@@ -79,24 +80,16 @@ def get_configs_keys(key, default=None):
 
 # ----------------------- SECRETS MANAGER --------------------- #
 
-def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
+def _get_secrets(secret_id: str, aws_profile = None, secrets_manager_client = None) -> dict:
     if not secret_id:
         return {}
     
     if not secrets_manager_client:
         try:
-            from boto3 import client
+            from boto3 import Session
 
-            env_path = get_config_file_path('.env')
-
-            # Environment variables such as:
-            # AWS_ACCESS_KEY_ID=AK...
-            # AWS_SECRET_ACCESS_KEY=KXS...
-            # AWS_DEFAULT_REGION=us-east-1
-            # are required!
-            load_dotenv(env_path)
-
-            secrets_manager_client = client('secretsmanager', region_name='us-east-1')
+            session = Session(profile_name=aws_profile if aws_profile in Session().available_profiles or [] else None)
+            secrets_manager_client = session.client('secretsmanager', region_name='us-east-1')
         
         except:
             return {}

@@ -1,14 +1,10 @@
 from setuptools import setup
 
-install_requires = [
-    'python-dotenv==1.0.0',
-]
-
 
 setup(
     name='armada',
     packages=['armada'],
-    version='1.6',
+    version='1.7',
     description='Configuration manager for ArmadaPlatform services.',
     author='Ganymede',
     author_email='cerebro@ganymede.eu',
@@ -18,5 +14,4 @@ setup(
     classifiers=[],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    install_requires=install_requires,
 )
