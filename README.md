@@ -95,11 +95,16 @@ Added in version 1.4.
       secrets_manager_client=sm_client,
     )
     ```
-  If you didn't put client as a parameter, but you have installed boto3 we create client for you. But in this case you need to create .env file in your config directory and add AWS variables such as:
-  * AWS_ACCESS_KEY_ID=AK...
-  * AWS_SECRET_ACCESS_KEY=KXS...
-  * AWS_DEFAULT_REGION=us-east-1  
+  If you didn't put client as a parameter, but you have installed boto3 we create client for you.
 
+  From version 1.7 armada-py supports AWS CLI profiles. If you want to use them to get secrets simply add "aws_profile".
+  ```
+    "secrets_manager": {
+      "name": "production-example",
+      "aws_profile": "production"
+    }
+  ```
+  <br><br>
 KEY in secrets manager can be totally different then key in config.
 
 Default type is 'str'. You don't need to add ':str' to value. Otherwise you need to specify data type.

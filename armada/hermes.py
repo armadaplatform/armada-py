@@ -17,6 +17,7 @@ def get_merged_config(key, default=None, secrets_manager_client=None):
     if isinstance(config, dict):
         secrets = _get_secrets(
             secret_id=config.get('secrets_manager', {}).get('name', ''),
+            aws_profile=config.get('secrets_manager', {}).get('aws_profile', None),
             secrets_manager_client=secrets_manager_client,
         )
 
@@ -40,6 +41,7 @@ def get_config(key, default=None, strip=True, secrets_manager_client=None):
         if isinstance(result, dict):
             secrets = _get_secrets(
                 secret_id=result.get('secrets_manager', {}).get('name', ''),
+                aws_profile=result.get('secrets_manager', {}).get('aws_profile', None),
                 secrets_manager_client=secrets_manager_client,
             )
 
@@ -78,7 +80,7 @@ def get_configs_keys(key, default=None):
 
 # ----------------------- SECRETS MANAGER --------------------- #
 
-def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
+def _get_secrets(secret_id: str, aws_profile = None, secrets_manager_client = None) -> dict:
     if not secret_id:
         return {}
     
@@ -86,9 +88,7 @@ def _get_secrets(secret_id: str, secrets_manager_client=None) -> dict:
         try:
             from boto3 import Session
 
-            # Support AWS CLI profiles for local development
-            profile_name = f'sm-{secret_id}'
-            session = Session(profile_name=profile_name if profile_name in Session().available_profiles or [] else None)
+            session = Session(profile_name=aws_profile if aws_profile in Session().available_profiles or [] else None)
             secrets_manager_client = session.client('secretsmanager', region_name='us-east-1')
         
         except:
