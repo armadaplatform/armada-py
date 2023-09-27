@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 from .config import Config
 
@@ -84,21 +85,23 @@ def _get_secrets(secret_id: str, aws_profile = None, secrets_manager_client = No
     if not secret_id:
         return {}
     
-    if not secrets_manager_client:
-        try:
+    try:
+        if not secrets_manager_client:
             from boto3 import Session
 
             session = Session(profile_name=aws_profile if aws_profile in Session().available_profiles or [] else None)
             secrets_manager_client = session.client('secretsmanager', region_name='us-east-1')
-        
-        except:
-            return {}
 
-    try:
         get_secret_value_response = secrets_manager_client.get_secret_value(
             SecretId=secret_id
         )
     except:
+        logging.warning(
+            '\n*** WARNING! *** \n' \
+            f'Could not connect to secrets manager "{secret_id}"! \n' \
+            f'It is recommended to set its AWS credentials in profile [secrets-manager-{secret_id}]: \n' \
+            f'aws configure --profile secrets-manager-{secret_id} \n'
+        )
         return {}
 
     return json.loads(get_secret_value_response['SecretString'])
